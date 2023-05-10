@@ -1,0 +1,4 @@
+System.out.println("º±≈√ <0:exit> : ");
+		int sel = sc.nextInt();
+		if (sel == 0)
+			break;

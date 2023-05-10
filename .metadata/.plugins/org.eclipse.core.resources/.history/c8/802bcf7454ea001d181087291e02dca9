@@ -1,0 +1,59 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class h2connection3 {
+	Connection con = null;
+	//table insert 
+		private void insertDeptprepared(int cid, String name, String category, String address, String company , Date birthday) {
+			try {
+				PreparedStatement pr = con.prepareStatement("insert into dept(cid, name ,category,address,company,birthday) valuse(?,?,?,?,?,?) ");
+				if(true) {
+				pr.nextInt().setInt(1, cid);
+				pr.setString(2, name);
+				pr.setString(3, category);
+				pr.setString(4, company);
+				pr.setDate(5, birthday);
+				pr.executeUpdate();
+				System.out.println("데이터가 입력되었습니다.");
+			}}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		private boolean connectH2DB() {
+			try {
+				Class.forName("org.h2.Driver");
+				con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "sa", "tiger");
+				System.out.println("데이터베이스가 연결되었습니다.");
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		private void closeH2DB() {
+			try {
+				con.close();
+				System.out.println("데이터베이스가 닫혔습니다.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		public static void main(String[] args) {
+			Scanner sc = new Scanner(System.in);
+			h2connection3 tt = new h2connection3();
+			if (tt.connectH2DB()) {
+				tt.insertDeptprepared();
+			}
+			tt.closeH2DB();
+		}
+		}
+}
+
+

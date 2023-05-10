@@ -1,0 +1,60 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+
+public class h2connection2 {
+	Connection con = null;
+
+	// table 추가하기 1
+	private void insertDeptStatement(String dno, String dname, int budget) {
+
+		String sql = String.format("insert into dept(dno,dname,budget) values(?,?,?)", dno, dname, budget);
+
+		try {
+			PreparedStatement st = con.prepareStatement(sql);
+
+			st.setString(1, dno);
+			st.setString(2, dname);
+			st.setInt(3, budget);
+			st.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("데이터베이스가 입력되었습니다.");
+	}
+
+	private boolean connectH2DB() {
+		try {
+			Class.forName("org.h2.Driver");
+			con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "sa", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeH2DB() {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		h2connection2 tt = new h2connection2();
+		if (tt.connectH2DB()) {
+			for (int i = 1; i <= 100; i++) {
+			tt.insertDeptStatement("d1", "dname1", 100);	
+			}
+			tt.closeH2DB();
+		}
+	}
+}

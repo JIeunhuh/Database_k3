@@ -1,0 +1,20 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+import com.mysql.cj.protocol.Resultset;
+import com.mysql.cj.xdevapi.Statement;
+
+public class mysql2 {
+	Connection con =null;
+	Statement st = null;
+	Resultset rs = null;
+	try {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		con = DriverManager.getConnection("jdbc:mysql://locelhost:3306/warehouse","scott","tiger");
+	
+		st=con.createStatement();
+		rs=st.executeQuery("Select * from spj order by sno");
+	}
+}

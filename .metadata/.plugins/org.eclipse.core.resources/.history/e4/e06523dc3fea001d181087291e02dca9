@@ -1,0 +1,5 @@
+package sqlconnection;
+
+public class h2connection {
+
+}

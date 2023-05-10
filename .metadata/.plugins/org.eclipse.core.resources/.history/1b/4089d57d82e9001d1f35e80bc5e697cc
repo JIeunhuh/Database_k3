@@ -1,0 +1,70 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class mysql3 {
+
+	Connection con = null;
+
+	private void insertDeptStatement(String dno, String dname, int budget) {
+
+		String sql = String.format("insert into dept(dno,dname,budget) values('%s,'%s','%d')", dno, dname, budget);
+		
+		try {
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("Select * from spj order by sno"); //.executeQuery()를 통해 쿼리문 입력함
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("데이터베이스가 입력되었습니다.");
+	}
+
+//	private void insertDept(String dno, String dname, int budget) {
+//		// table 추가하기
+//		// String sql = "insert into dept (dno,dname,budget) values(?,?,?)";
+//		try {
+//			PreparedStatement ps = con.prepareStatement(sql);
+//			ps.setString(1, dno);
+//			ps.setString(2, dname);
+//			ps.setInt(3, budget);
+//			ps.executeUpdate();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println("데이터베이스가 입력되었습니다.");
+//	}
+
+	private boolean connectDB() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "scott", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		mysql3 tt = new mysql3();
+		if (tt.connectDB()) {
+			tt.insertDeptStatement("d13", "d13name", 45);
+			tt.closeDB();
+		}
+	}
+}

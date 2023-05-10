@@ -1,0 +1,189 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import com.mysql.cj.xdevapi.Type;
+
+public class Mission02 {
+
+//	void selectQuery1() {
+//
+//		try {
+//			Statement st = con.createStatement();
+//			ResultSet rs = st.executeQuery("select jname from j where city in ('london')");
+//			ResultSetMetaData rsmd = rs.getMetaData();
+//
+//			System.out.println(rsmd.getColumnName(1));
+//			while (rs.next()) {
+//				System.out.println(String.format("'%s'", rs.getString("jname")));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	void selectQuery2() {
+//
+//		try {
+//			Statement st = con.createStatement();
+//			ResultSet rs = st.executeQuery("select sname from spj, s where spj.sno=s.sno and spj.jno='j1'");
+//			ResultSetMetaData rsmd = rs.getMetaData();
+//			int col = rsmd.getColumnCount();
+//
+//			System.out.print(rsmd.getColumnName(1) + " ");
+//			System.out.println("\n" + "----------");
+//			while (rs.next()) {
+//				System.out.println(String.format("%s", rs.getString("sname")));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	void selectQuery3() {
+//
+//		try {
+//			Statement st = con.createStatement();
+//			ResultSet rs = st.executeQuery(
+//					"select spj.sno, spj.pno, spj.qty from spj where spj.qty>300 and spj.qty<=750 order by qty asc");
+//			ResultSetMetaData rsmd = rs.getMetaData();
+//			int col = rsmd.getColumnCount();
+//			for (int i = 1; i <= col; i++) {
+//				System.out.print(rsmd.getColumnName(i) + " ");
+//			}
+//			System.out.println("\n" + "---------------------");
+//			while (rs.next()) {
+//				System.out.println(String.format("%s, %s, %s", rs.getString("spj.sno"), rs.getString("spj.pno"),
+//						rs.getString("spj.qty")));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	void selectQuery4() {
+//
+//		try {
+//			Statement st = con.createStatement();
+//			ResultSet rs = st.executeQuery("select distinct color, city from p");
+//			ResultSetMetaData rsmd = rs.getMetaData();
+//			int col = rsmd.getColumnCount();
+//			for (int i = 1; i <= col; i++) {
+//				System.out.print(rsmd.getColumnName(i) + " ");
+//			}
+//			System.out.println("\n" + "---------------------");
+//			while (rs.next()) {
+//				System.out.println(String.format("%s, %s", rs.getString("color"), rs.getString("city")));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	// connectDB()
+	private Connection connectDB() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "scott", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return con;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	// closeDB()
+	void closeDB(Connection con) {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	void selectQuery(Connection con, Query query) {
+
+		try {
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery(query.getSql());
+			ResultSetMetaData meta = rs.getMetaData();
+			int cnt = meta.getColumnCount();
+
+//			System.out.println(meta.getColumnLabel(1));
+			
+			System.out.println("=".repeat(80));
+			for (int i = 1 ; i <= cnt ; i++) {
+				if (i != 1) System.out.print(",");
+				System.out.print(meta.getColumnLabel(i));
+			}
+			System.out.println();
+			
+			while (rs.next()) {
+				for (int i = 1 ; i <= cnt ; i++) {
+					if (i != 1) System.out.print(",");
+					
+					int type = meta.getColumnType(i);
+					if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NCHAR)
+						System.out.print(rs.getString(i));
+					else if (type == Types.INTEGER || type == Types.BIGINT)
+						System.out.print(rs.getInt(i));
+					else
+						System.out.print(rs.getDouble(i));
+				}
+				System.out.println();
+			}
+			System.out.println("-".repeat(80));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	public static void main(String[] args) {
+
+		ArrayList<Query> list = new ArrayList<>(); // arraylist<> 제너릭 만들어서 query class호출
+
+		list.add(new Query(1,	"London에 있는 프로젝트 이름을 찾아라",					
+								"select jname from j where city in ('london')"));
+		list.add(new Query(2,	"j1에 참여하는 공급자의 이름",
+								"select sname from spj, s where spj.sno=s.sno and spj.jno='j1'"));
+		list.add(new Query(3, "공급수량 300이상 750이하인 모든 공급의 sno,pno,qty"));
+		list.add(new Query(4, "부품의 color와 city의 모든쌍 찾기 같은 쌍은 한번만 검색"));
+
+		Mission02 query = new Mission02();
+		Connection con = query.connectDB();
+		if (con == null) return;
+
+		Scanner sc = new Scanner(System.in);
+
+		while (true) {
+			for (Query qu : list) { // 확장 for문 이용해서 배열 하나씩 가져오기
+				System.out.println(String.format("%d,'%s'", qu.getNum(), qu.getText()));
+			}
+			System.out.println("=".repeat(80));
+			System.out.print("선택 <0:exit> : ");
+			int sel = sc.nextInt();
+			if (sel == 0) {
+				query.closeDB(con);
+				sc.close();
+				return;
+			}
+			switch (sel) {
+			case 0:		query.closeDB(con); sc.close(); return;
+			case 1:		query.selectQuery(con, list.get(sel-1));	break;
+			case 2:		query.selectQuery(con, list.get(sel-1)();	break;
+//			case 3:		query.selectQuery3();	break;
+//			case 4:		query.selectQuery4();	break;
+			default:	break;
+			}
+		}
+	}
+}

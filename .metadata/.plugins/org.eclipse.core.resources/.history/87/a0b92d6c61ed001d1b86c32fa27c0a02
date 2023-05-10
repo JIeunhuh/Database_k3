@@ -1,0 +1,17 @@
+package sqlconnection;
+
+import java.sql.Statement;
+import java.util.Random;
+
+public class Test01 {
+private void insertContactWithStatement(Connection con) {
+	Statement st =null;
+	String[] categories = {"친구","가족","직장동료","기타"};
+	Random rd = new Random();
+	int totcnt = 100;
+	
+	try {
+		st=con.create
+	}
+}
+}

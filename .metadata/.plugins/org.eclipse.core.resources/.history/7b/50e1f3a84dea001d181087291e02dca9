@@ -1,0 +1,44 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+public class h2connection3 {
+	Connection con = null;
+	//table insert 
+		private void insertDeptpreprared(String dno, String dname, int budget) {
+			try {
+				PreparedStatement pr = con.prepareStatement("update dept set dname=?, budget=? where dno=?");
+				pr.setString(1, dname);
+				pr.setInt(2, budget);
+				pr.setString(3, dno);
+				pr.executeUpdate();
+				System.out.println("데이터가 입력되었습니다.");
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		private boolean connectH2DB() {
+			try {
+				Class.forName("org.h2.Driver");
+				con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "sa", "tiger");
+				System.out.println("데이터베이스가 연결되었습니다.");
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		private void closeH2DB() {
+			try {
+				con.close();
+				System.out.println("데이터베이스가 닫혔습니다.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+}
